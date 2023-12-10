@@ -1,0 +1,526 @@
+{% if section.settings.selected_product %}
+  {% assign today_date = 'now' | date: '%s' %}
+  {% assign today_date_str = section.settings.start_day | append: '-' | append: section.settings.start_month | append: '-' | append: section.settings.start_year %}
+  {% assign offer_date = today_date_str | date: '%s' %}
+  {% if offer_date > today_date %}
+  
+  {% assign product_id = section.settings.selected_product %}
+  {% assign product = all_products[product_id] %}
+  
+  {% if product %}
+    <div class="discount-banner">
+      <div class="circle-bg"></div>
+      <div class="col col-1">
+        <h2>Get Discount</h2>
+        <p>{{ section.settings.discription_text }}</p>
+      </div>
+      <div class="col col-2">
+        <div class="col-img">
+          <img src="{{ product.featured_image | product_img_url: 'medium' }}" width="240" height="160" alt="{{ product.title }}" />
+        </div>
+        <div class="col-product">
+          <h2>{{ product.title }}</h2>
+          <h3><b>Vendor:</b> {{ product.vendor }}</h3>
+          <h3><b>Category:</b> {{ product.type }}</h3>
+          <p>{{ product.description }}</p>
+          <form method="post" action="/cart/add">
+            <input type="hidden" name="id" value="{{ product.variants.first.id }}" />
+            <input type="hidden" id="quantity" name="quantity" value="1"/>
+            <button type="submit" class="btn">Add to Cart</button>
+          </form>
+        </div>
+        
+      </div>
+      <div class="col col-3">
+        <div id="countdown">
+          <p id="timer"></p>
+        </div>
+        <div class="tagline">
+          <h3>{{ section.settings.tagline }}</h3>
+        </div>
+        <div class="offer-rate">
+          Get <span>{{ section.settings.offer_rate }}</span> off
+        </div>
+      </div>
+    </div>
+    <script>
+      // Set the end date for the countdown (example: one week from now)
+      var endDate = new Date('{{ today_date_str }}');
+      //endDate.setDate(endDate.getDate() + 7); // Replace this with your desired end date
+    
+      // Update the timer every second
+      var x = setInterval(function() {
+        var now = new Date().getTime();
+        var distance = endDate - now;
+    
+        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    
+        document.getElementById("timer").innerHTML = "<div><span>DAYS</span> "+ days + "</div>:<div><span>HR</span>" + hours + "</div>:<div><span>MIN</span>" + minutes + "</div>:<div><span>SEC</span>" + seconds + "</div>";
+    
+        if (distance < 0) {
+          clearInterval(x);
+          document.getElementById("timer").innerHTML = "EXPIRED";
+        }
+      }, 1000);
+    </script>
+  {% endif %}
+{% endif %}
+{% endif %}
+{% style %}
+  /* Rectangle 1 */
+.discount-banner{
+  display:flex;
+  /* height: 256px; */
+  width:100%;
+  background: linear-gradient(180deg, #F3AA54 0%, #F29629 100%);
+  align-items: center;
+    padding: 20px 30px;
+  flex-wrap:wrap;
+  position:relative;
+  overflow:hidden;
+  align-items:space-between;
+}
+.discount-banner .circle-bg{
+  position:absolute;
+  top:-64px;
+  left:-64px;
+  width:128px;
+  height:128px;
+  background-color:#F15D2699;
+  border-radius:50%;
+  display:block;
+}
+.discount-banner::before{
+    content: '';
+    position: absolute;
+    opacity: 0.7;
+    left: 0;
+    top: 0;
+    width: 140px;
+    bottom: 0;
+    display: block;
+    background: url({{ 'Mask_group-removebg-preview.png' | asset_url }});
+    background-position-x: left;
+    background-position-y: bottom;
+    background-size: auto;
+    background-repeat: no-repeat;
+  
+}
+.col{
+  width:32%;
+}
+.col-1 h2{
+  color: #FFF;
+  font-size: 40px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+}
+.col-1{
+  padding-left:10%;
+}
+
+.col-1 p{
+  color: #FFF;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 199.5%; /* 27.93px */
+}
+.col-2{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.col-product h2{
+  color: #FFF;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  margin-top:0
+}
+.col-product h3{
+  color: #FFF;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  margin:0
+}
+  .col-product p{
+    color: #FFF;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 300;
+  }
+  .col-product button{
+    border-radius: 8px;
+    background: var(--blue, linear-gradient(180deg, #2693FA 0%, #174E83 100%));
+    color: white;
+    border: 0;
+    padding: 10px 35px;
+    cursor:pointer;
+  }
+  .col-product button:hover{
+    background:linear-gradient(0deg, #2693FA 0%, #174E83 100%)
+  }
+  .col-3{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+  }
+  .col-3 #countdown{
+        padding: 10px 25px;
+    color: white;
+    background:linear-gradient(180deg, #FA7226 0%, #DA2127 100%);
+  }
+  .col-3 #countdown #timer{
+        display: flex;
+    align-items: end;
+    font-size: 40px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 0.7em;
+    margin: 0;
+  }
+  .col-3 #countdown #timer > div{
+    text-align:center;
+    margin: 0px 2px;
+  }
+  .col-3 #countdown #timer span{
+        display: block;
+    font-size: 0.4em;
+  }
+  .col-3 .tagline h3{
+    color: #FFF;
+    text-align: center;
+    font-size: 24px;
+    font-style: normal;
+    font-weight:600;
+  }
+  .col-3 .offer-rate{
+    border-radius: 4px;
+    background: #EF5726;
+    color: #FFF;
+    text-align: center;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 172.2%;
+    padding: 0px 30px;
+  }
+  .col-3 .offer-rate span{
+    font-size:32px;
+  }
+{% endstyle %}
+{% schema %}
+  {
+    "name": "Discounted Product",
+    "settings": [
+      {
+        "label": "Select a Product",
+        "type": "product",
+        "id": "selected_product"
+      },
+      {
+        "label": "Discription Text",
+        "type": "inline_richtext",
+        "id": "discription_text"
+      },
+      {
+        "label": "Offer Tagline",
+        "type": "text",
+        "id": "tagline"
+      },
+       {
+        "label": "Offer Rate",
+        "type": "text",
+        "id": "offer_rate"
+      },
+      {
+        "type": "header",
+        "content": "Offer End Date"
+      },
+      {
+        "type": "select",
+        "id": "start_year",
+        "label": "Year",
+        "options": [
+          {
+            "value": "2023",
+            "label": "2023"
+          },
+          {
+            "value": "2024",
+            "label": "2024"
+          },
+          {
+            "value": "2025",
+            "label": "2025"
+          },
+          {
+            "value": "2026",
+            "label": "2026"
+          },
+          {
+            "value": "2027",
+            "label": "2027"
+          },
+          {
+            "value": "2028",
+            "label": "2028"
+          },
+          {
+            "value": "2029",
+            "label": "2029"
+          },
+          {
+            "value": "2030",
+            "label": "2030"
+          },
+          {
+            "value": "2031",
+            "label": "2031"
+          },
+          {
+            "value": "2032",
+            "label": "2032"
+          },
+          {
+            "value": "2033",
+            "label": "2033"
+          },
+          {
+            "value": "2034",
+            "label": "2034"
+          },
+          {
+            "value": "2035",
+            "label": "2035"
+          },
+          {
+            "value": "2036",
+            "label": "2036"
+          },
+          {
+            "value": "2037",
+            "label": "2037"
+          },
+          {
+            "value": "2038",
+            "label": "2038"
+          },
+          {
+            "value": "2039",
+            "label": "2039"
+          },
+          {
+            "value": "2040",
+            "label": "2040"
+          }
+        ],
+        "default": "2023"
+      },
+      {
+        "type": "select",
+        "id": "start_month",
+        "label": "Month",
+        "options": [
+          {
+            "value": "1",
+            "label": "January"
+          },
+          {
+            "value": "2",
+            "label": "February"
+          },
+          {
+            "value": "3",
+            "label": "March"
+          },
+              {
+            "value": "4",
+            "label": "April"
+          },
+          {
+            "value": "5",
+            "label": "May"
+          },
+          {
+            "value": "6",
+            "label": "June"
+          },
+              {
+            "value": "7",
+            "label": "July"
+          },
+          {
+            "value": "8",
+            "label": "August"
+          },
+          {
+            "value": "9",
+            "label": "September"
+          },
+              {
+            "value": "10",
+            "label": "October"
+          },
+          {
+            "value": "11",
+            "label": "November"
+          },
+          {
+            "value": "12",
+            "label": "December"
+          }
+        ],
+        "default": "1"
+      },
+      {
+        "type": "select",
+        "id": "start_day",
+        "label": "Day",
+        "options": [
+          {
+            "value": "1",
+            "label": "1"
+          },
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+              {
+            "value": "4",
+            "label": "4"
+          },
+          {
+            "value": "5",
+            "label": "5"
+          },
+          {
+            "value": "6",
+            "label": "6"
+          },
+              {
+            "value": "7",
+            "label": "7"
+          },
+          {
+            "value": "8",
+            "label": "8"
+          },
+          {
+            "value": "9",
+            "label": "9"
+          },
+              {
+            "value": "10",
+            "label": "10"
+          },
+          {
+            "value": "11",
+            "label": "11"
+          },
+          {
+            "value": "12",
+            "label": "12"
+          },
+              {
+            "value": "13",
+            "label": "13"
+          },
+          {
+            "value": "14",
+            "label": "14"
+          },
+          {
+            "value": "15",
+            "label": "15"
+          },
+              {
+            "value": "16",
+            "label": "16"
+          },
+          {
+            "value": "17",
+            "label": "17"
+          },
+          {
+            "value": "18",
+            "label": "18"
+          },
+              {
+            "value": "19",
+            "label": "19"
+          },
+          {
+            "value": "20",
+            "label": "20"
+          },
+          {
+            "value": "21",
+            "label": "21"
+          },
+              {
+            "value": "22",
+            "label": "22"
+          },
+          {
+            "value": "23",
+            "label": "23"
+          },
+          {
+            "value": "24",
+            "label": "24"
+          },
+              {
+            "value": "25",
+            "label": "25"
+          },
+          {
+            "value": "26",
+            "label": "26"
+          },
+          {
+            "value": "27",
+            "label": "26"
+          },
+              {
+            "value": "28",
+            "label": "28"
+          },
+          {
+            "value": "29",
+            "label": "29"
+          },
+          {
+            "value": "30",
+            "label": "30"
+          },
+              {
+            "value": "31",
+            "label": "31"
+          }
+        ],
+        "default": "1"
+      }
+    ],
+    "presets": [
+    {
+      "name": "Discounted Product",
+      "category": "ADVANCED LAYOUT"
+    }
+  ]
+  }
+{% endschema %}
+
